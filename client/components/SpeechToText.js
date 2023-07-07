@@ -5,9 +5,12 @@ import Voice from '@react-native-voice/voice';
 const SpeechToText= () => {
   const [isListening, setIsListening] = useState(false);
   const [recognizedText, setRecognizedText] = useState('');
+  const [finalText, setFinalText] = useState('');
   const lastUserInputTimeRef = useRef(null);
   const timeoutRef = useRef(null);
   const websocketRef = useRef(null);
+  const [index, setIndex] = useState(0)
+  
   
   useEffect(() => {
     Voice.onSpeechResults = speechResults;
@@ -21,16 +24,21 @@ const SpeechToText= () => {
     let timer = null;
     
     const handleSpeechTimeout = () => {
-      if (recognizedText !== '') {
+      if (finalText == '') {
         // User input received, do something
-        console.log('User input received:', recognizedText);
+        console.log('First User input received:', recognizedText);
+        setFinalText(recognizedText)
+        //index = recognizedText.length
+        setIndex(recognizedText.length+1)
         websocketRef.current.send(recognizedText);
         
       } else {
-        // No user input received, do something else
-        console.log('No user input received.');
+        console.log('User input s:', recognizedText.substring(index));
+        setFinalText(recognizedText.substring(index))
+        setIndex(recognizedText.length+1)
+        websocketRef.current.send(recognizedText.substring(index));
       }
-    };
+    }
 
     if (isListening) {
       lastUserInputTimeRef.current = new Date().getTime();
@@ -71,19 +79,34 @@ const SpeechToText= () => {
       }
       await Voice.stop()
       setIsListening(false)
+      setFinalText("")
+      setRecognizedText("")
+      setIndex(0)
     } catch (error) {
       console.error('Failed to stop listening:', error);
     }
   };
 
   const speechResults = (event) => {
-    const recognized = event.value[0]
-    setRecognizedText(recognized);
+    //console.log("event value:" ,event)
+    setRecognizedText(event.value[0]);
   };
 
-  //const updateInput = (updatedRecognizedText)=>{
-
-  //}
+  /*
+   if (finalText == '') {
+        // User input received, do something
+        console.log('User input received:', recognizedText);
+        setFinalText(recognizedText)
+        const index = recognizedText.length
+        console.log(index)
+       //websocketRef.current.send(recognizedText);
+        
+      } else {
+        setFinalText(recognizedText.substring(index))
+        console.log('User input received:', finalText);
+        const index = recognizedText.length
+        console.log(index)
+      }*/
   return (
     <View>
       <Button 
