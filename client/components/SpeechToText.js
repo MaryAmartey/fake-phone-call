@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Button } from 'react-native';
 import Voice from '@react-native-voice/voice';
+import Tts from 'react-native-tts';
+
 
 const SpeechToText= () => {
   const [isListening, setIsListening] = useState(false);
@@ -10,8 +12,10 @@ const SpeechToText= () => {
   const timeoutRef = useRef(null);
   const websocketRef = useRef(null);
   const [index, setIndex] = useState(0)
+  //const [response, setResponse] = useState('');
   
   
+
   useEffect(() => {
     Voice.onSpeechResults = speechResults;
 
@@ -31,6 +35,12 @@ const SpeechToText= () => {
         //index = recognizedText.length
         setIndex(recognizedText.length+1)
         websocketRef.current.send(recognizedText);
+        websocketRef.current.onmessage = (event) => {
+          const response = event.data
+          console.log('Received response from WebSocket:', response);
+          // Perform further processing with the received response
+          // ...
+        };
         
       } else {
         console.log('User input s:', recognizedText.substring(index));
@@ -58,8 +68,7 @@ const SpeechToText= () => {
     // WebSocket event listeners
     try {
       await Voice.isAvailable()
-      websocketRef.current = new WebSocket('ws://0.0.0.0:8080'); // replace with your server URL
-
+      websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
       websocketRef.current.onopen = () => {
         console.log('WebSocket connected');
       };
@@ -92,21 +101,7 @@ const SpeechToText= () => {
     setRecognizedText(event.value[0]);
   };
 
-  /*
-   if (finalText == '') {
-        // User input received, do something
-        console.log('User input received:', recognizedText);
-        setFinalText(recognizedText)
-        const index = recognizedText.length
-        console.log(index)
-       //websocketRef.current.send(recognizedText);
-        
-      } else {
-        setFinalText(recognizedText.substring(index))
-        console.log('User input received:', finalText);
-        const index = recognizedText.length
-        console.log(index)
-      }*/
+
   return (
     <View>
       <Button 

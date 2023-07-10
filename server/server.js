@@ -20,6 +20,7 @@ const server = app.listen(PORT, HOST, () => {
 
 
 let text = ''
+let response = ''
 // Create a WebSocket server using the HTTP server
 const wss = new WebSocket.Server({ server });
 
@@ -28,13 +29,13 @@ wss.on('connection', (ws) => {
   console.log('WebSocket connected')
 
   // Handle incoming messages from the WebSocket client
-  ws.on('message', (message) => {
+  ws.on('message', async (message) => {
     text = message.toString('utf-8');
     console.log('Received message:', text);
-    //executorFunction(text)
-
+    response = await executorFunction(text)
     // Send a response back to the WebSocket client
-    ws.send('Message received!')
+    console.log("response:", response)
+    ws.send(response)
   })
   // Handle WebSocket disconnections
   ws.on('close', () => {

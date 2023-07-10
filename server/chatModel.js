@@ -27,7 +27,7 @@ const chatModel = async (userInput) => {
   console.log("Loaded agent.");
 
   const result = await executor.call({ input: userInput });
-  console.log(result.output)
+  return result.output
 
 };
 
