@@ -32,7 +32,8 @@ wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     text = message.toString('utf-8');
     console.log('Received message:', text);
-    response = await executorFunction(text)
+    response = "Info sent from chat Model"
+    //response = await executorFunction(text)
     // Send a response back to the WebSocket client
     console.log("response:", response)
     ws.send(response)

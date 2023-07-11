@@ -125,7 +125,6 @@ const Translator= () => {
 
   const speakText = async (text) => {
     try {
-      disableMicrophone()
       await Tts.setDefaultLanguage('en-US'); // Set the language (optional)
   
       // Register event listeners for TTS events

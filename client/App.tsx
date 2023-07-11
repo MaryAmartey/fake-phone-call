@@ -1,8 +1,7 @@
 
 import React from 'react';
 import type {PropsWithChildren} from 'react';
-import AppConnect from './components/AppConnect.js';
-import SpeechToText from './components/SpeechToText.js';
+import Translator from './components/Translator.js';
 import {
   SafeAreaView,
   ScrollView,
@@ -79,7 +78,7 @@ function App(): JSX.Element {
           </Section>
         </View>
       </ScrollView>
-    <SpeechToText/>
+    <Translator/>
     </SafeAreaView></>
   );
 }
