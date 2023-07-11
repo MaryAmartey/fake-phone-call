@@ -4,7 +4,7 @@ import Voice from '@react-native-voice/voice';
 import Tts from 'react-native-tts';
 
 
-const SpeechToText= () => {
+const Translator= () => {
   const [isListening, setIsListening] = useState(false);
   const [recognizedText, setRecognizedText] = useState('');
   const [finalText, setFinalText] = useState('');
@@ -27,7 +27,7 @@ const SpeechToText= () => {
   useEffect(() => {
     let timer = null;
     
-    const handleSpeechTimeout = () => {
+    const handleSpeechTimeout = async () => {
       if (finalText == '') {
         // User input received, do something
         console.log('First User input received:', recognizedText);
@@ -38,8 +38,7 @@ const SpeechToText= () => {
         websocketRef.current.onmessage = (event) => {
           const response = event.data
           console.log('Received response from WebSocket:', response);
-          // Perform further processing with the received response
-          // ...
+          speakText(response);
         };
         
       } else {
@@ -47,6 +46,11 @@ const SpeechToText= () => {
         setFinalText(recognizedText.substring(index))
         setIndex(recognizedText.length+1)
         websocketRef.current.send(recognizedText.substring(index));
+        websocketRef.current.onmessage = (event) => {
+          const response = event.data
+          console.log('Received response from WebSocket:', response);
+          speakText(response);
+        };
       }
     }
 
@@ -101,6 +105,58 @@ const SpeechToText= () => {
     setRecognizedText(event.value[0]);
   };
 
+  const disableMicrophone = async() => {
+    // Assume you are using react-native-voice library
+  
+    // Stop voice recognition
+    await Voice.stop();
+    
+    // Optionally, reset any recognition results or states
+    await Voice.cancel();
+  
+  };
+
+  const enableMicrophone = () => {
+    // Assume you are using react-native-voice library
+  
+    // Reinitialize the voice recognizer
+    Voice.start('en-US');
+  };
+
+  const speakText = async (text) => {
+    try {
+      disableMicrophone()
+      await Tts.setDefaultLanguage('en-US'); // Set the language (optional)
+  
+      // Register event listeners for TTS events
+      Tts.addEventListener('tts-start', handleTtsStart);
+      Tts.addEventListener('tts-progress', handleTtsProgress);
+      Tts.addEventListener('tts-finish', handleTtsFinish);
+  
+      // Speak the text
+      Tts.speak(text);
+    } catch (error) {
+      console.error('Error speaking text:', error);
+    }
+  };
+  
+  // Event listener for tts-start event
+  const handleTtsStart = (event) => {
+    //console.log('TTS started:', event);
+    // Handle tts-start event
+  };
+  
+  // Event listener for tts-progress event
+  const handleTtsProgress = (event) => {
+    //console.log('TTS progress:', event);
+    // Handle tts-progress event
+  };
+  
+  // Event listener for tts-finish event
+  const handleTtsFinish = (event) => {
+    //console.log('TTS finished:', event);
+    // Handle tts-finish event
+  };
 
   return (
     <View>
@@ -113,4 +169,4 @@ const SpeechToText= () => {
   );
 };
 
-export default SpeechToText;
+export default Translator;
