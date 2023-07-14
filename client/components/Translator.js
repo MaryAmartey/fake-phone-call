@@ -76,7 +76,7 @@ const Translator= () => {
       websocketRef.current.onopen = () => {
         console.log('WebSocket connected');
       };
-      await Voice.start('en-US');
+      Voice.start('en-US');
       setIsListening(true);
     } catch (error) {
       console.error('Failed to start listening:', error);
@@ -133,7 +133,9 @@ const Translator= () => {
       Tts.addEventListener('tts-finish', handleTtsFinish);
   
       // Speak the text
-      Tts.speak(text);
+      await stopListening()
+      const result = await Tts.speak(text)
+      console.log('successful result:', result)
     } catch (error) {
       console.error('Error speaking text:', error);
     }
@@ -153,8 +155,9 @@ const Translator= () => {
   
   // Event listener for tts-finish event
   const handleTtsFinish = (event) => {
-    //console.log('TTS finished:', event);
+    console.log('TTS finished:', event);
     // Handle tts-finish event
+    startListening()
   };
 
   return (
