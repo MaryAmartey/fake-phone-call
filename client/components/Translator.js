@@ -11,13 +11,22 @@ const Translator= () => {
   const lastUserInputTimeRef = useRef(null);
   const timeoutRef = useRef(null);
   const websocketRef = useRef(null);
-  const [index, setIndex] = useState(0)
-  //const [response, setResponse] = useState('');
-  
-  
+  const [isSpeaking, setIsSpeaking] = useState(false); 
+  //const [spealing, isSpeakinh] = useState('');
 
+   
   useEffect(() => {
+    // Set up voice recognition event listeners.
+    Voice.onSpeechStart = onSpeechStart;
     Voice.onSpeechResults = speechResults;
+    Voice.onSpeechEnd = speechEnd;
+
+    // Register event listeners for TTS events
+    Tts.addEventListener('tts-start', handleTtsStart);
+    Tts.addEventListener('tts-progress', handleTtsProgress);
+    Tts.addEventListener('tts-finish', handleTtsFinish);
+
+
 
     return () => {
       Voice.destroy().then(Voice.removeAllListeners);
@@ -27,34 +36,14 @@ const Translator= () => {
   useEffect(() => {
     let timer = null;
     
-    const handleSpeechTimeout = async () => {
-      if (finalText == '') {
-        // User input received, do something
-        console.log('First User input received:', recognizedText);
-        setFinalText(recognizedText)
-        //index = recognizedText.length
-        setIndex(recognizedText.length+1)
-        websocketRef.current.send(recognizedText);
-        websocketRef.current.onmessage = (event) => {
-          const response = event.data
-          console.log('Received response from WebSocket:', response);
-          speakText(response);
-        };
-        
-      } else {
-        console.log('User input s:', recognizedText.substring(index));
-        setFinalText(recognizedText.substring(index))
-        setIndex(recognizedText.length+1)
-        websocketRef.current.send(recognizedText.substring(index));
-        websocketRef.current.onmessage = (event) => {
-          const response = event.data
-          console.log('Received response from WebSocket:', response);
-          speakText(response);
-        };
-      }
+    const handleSpeechTimeout = async() => {
+      if (recognizedText != '') {
+      console.log('User input s:', recognizedText);
+      const response = "I love chocolate chip cookies"
+      await speakText(response) 
     }
-
-    if (isListening) {
+  }
+    if (isListening == true) {
       lastUserInputTimeRef.current = new Date().getTime();
       clearTimeout(timer);
       timer = setTimeout(handleSpeechTimeout, 3000);
@@ -66,18 +55,15 @@ const Translator= () => {
     return () => {
       clearTimeout(timeoutRef.current);
     };
-  }, [recognizedText]);
+  }, [recognizedText])
 
   const startListening = async () => {
-    // WebSocket event listeners
     try {
-      await Voice.isAvailable()
-      websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
-      websocketRef.current.onopen = () => {
-        console.log('WebSocket connected');
-      };
+      await Voice.isAvailable();
+      await stopSpeaking(); // Stop TTS before starting voice recognition
       await Voice.start('en-US');
       setIsListening(true);
+      console.log('started');
     } catch (error) {
       console.error('Failed to start listening:', error);
     }
@@ -85,76 +71,71 @@ const Translator= () => {
 
   const stopListening = async () => {
     try {
-      if (websocketRef.current) {
-        websocketRef.current.close();
-        websocketRef.current = null;
-        console.log('WebSocket disconnected');
-      }
-      await Voice.stop()
-      setIsListening(false)
-      setFinalText("")
-      setRecognizedText("")
-      setIndex(0)
+      await Voice.stop();
     } catch (error) {
       console.error('Failed to stop listening:', error);
     }
   };
 
-  const speechResults = (event) => {
-    //console.log("event value:" ,event)
+  const stopSpeaking = async () => {
+    try {
+      await Tts.stop();
+      setIsSpeaking(false);
+    } catch (error) {
+      console.error('Error stopping TTS:', error);
+    }
+  };
+
+  const onSpeechStart = async (e) => {
+    console.log('Voice started');
+  };
+
+  // Event listener for when speech recognition ends.
+  const speechEnd = async (e) => {
+    console.log('Voice ended');
+  };
+
+  const speechResults = async (event) => {
     setRecognizedText(event.value[0]);
-  };
-
-  const disableMicrophone = async() => {
-    // Assume you are using react-native-voice library
-  
-    // Stop voice recognition
-    await Voice.stop();
-    
-    // Optionally, reset any recognition results or states
-    await Voice.cancel();
-  
-  };
-
-  const enableMicrophone = () => {
-    // Assume you are using react-native-voice library
-  
-    // Reinitialize the voice recognizer
-    Voice.start('en-US');
+    try {
+      await Voice.stop();
+      console.log('stopped');
+    } catch (error) {
+      console.error('Failed to stop listening:', error);
+    }
   };
 
   const speakText = async (text) => {
     try {
-      await Tts.setDefaultLanguage('en-US'); // Set the language (optional)
-  
-      // Register event listeners for TTS events
-      Tts.addEventListener('tts-start', handleTtsStart);
-      Tts.addEventListener('tts-progress', handleTtsProgress);
-      Tts.addEventListener('tts-finish', handleTtsFinish);
-  
-      // Speak the text
+      await Voice.stop() // Stop voice recognition before speaking text
+      setIsSpeaking(true);
       Tts.speak(text);
+      setIsSpeaking(false);
+      console.log('done talking');
     } catch (error) {
+      setIsSpeaking(false);
       console.error('Error speaking text:', error);
     }
   };
   
   // Event listener for tts-start event
-  const handleTtsStart = (event) => {
-    //console.log('TTS started:', event);
+  const handleTtsStart = async (event) => {
+    console.log('TTS started talking');
     // Handle tts-start event
-  };
+  }
   
   // Event listener for tts-progress event
   const handleTtsProgress = (event) => {
     //console.log('TTS progress:', event);
     // Handle tts-progress event
+    console.log("talking")
   };
   
   // Event listener for tts-finish event
-  const handleTtsFinish = (event) => {
-    //console.log('TTS finished:', event);
+  const handleTtsFinish = async (event) => {
     // Handle tts-finish event
+    console.log("done talking")
+    
   };
 
   return (
