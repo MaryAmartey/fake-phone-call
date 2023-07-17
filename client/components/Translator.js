@@ -39,6 +39,12 @@ const Translator= () => {
     const handleSpeechTimeout = async() => {
       if (recognizedText != '') {
       console.log('User input s:', recognizedText);
+      try {
+        await Voice.stop();
+        console.log('stopped voice');
+      } catch (error) {
+        console.error('Failed to stop listening:', error);
+      }
       const response = "I love chocolate chip cookies"
       await speakText(response) 
     }
@@ -60,7 +66,6 @@ const Translator= () => {
   const startListening = async () => {
     try {
       await Voice.isAvailable();
-      await stopSpeaking(); // Stop TTS before starting voice recognition
       await Voice.start('en-US');
       setIsListening(true);
       console.log('started');
@@ -72,19 +77,13 @@ const Translator= () => {
   const stopListening = async () => {
     try {
       await Voice.stop();
+      setIsListening(false)
     } catch (error) {
       console.error('Failed to stop listening:', error);
     }
   };
 
-  const stopSpeaking = async () => {
-    try {
-      await Tts.stop();
-      setIsSpeaking(false);
-    } catch (error) {
-      console.error('Error stopping TTS:', error);
-    }
-  };
+
 
   const onSpeechStart = async (e) => {
     console.log('Voice started');
@@ -97,23 +96,13 @@ const Translator= () => {
 
   const speechResults = async (event) => {
     setRecognizedText(event.value[0]);
-    try {
-      await Voice.stop();
-      console.log('stopped');
-    } catch (error) {
-      console.error('Failed to stop listening:', error);
-    }
   };
 
   const speakText = async (text) => {
-    try {
-      await Voice.stop() // Stop voice recognition before speaking text
-      setIsSpeaking(true);
+    try { 
       Tts.speak(text);
-      setIsSpeaking(false);
       console.log('done talking');
     } catch (error) {
-      setIsSpeaking(false);
       console.error('Error speaking text:', error);
     }
   };
