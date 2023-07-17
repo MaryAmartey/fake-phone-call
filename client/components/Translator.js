@@ -41,7 +41,7 @@ const Translator= () => {
       console.log('User input s:', recognizedText);
       try {
         await Voice.stop();
-        console.log('stopped voice');
+        console.log('stopped speech to text translator');
       } catch (error) {
         console.error('Failed to stop listening:', error);
       }
@@ -68,7 +68,6 @@ const Translator= () => {
       await Voice.isAvailable();
       await Voice.start('en-US');
       setIsListening(true);
-      console.log('started');
     } catch (error) {
       console.error('Failed to start listening:', error);
     }
@@ -83,15 +82,13 @@ const Translator= () => {
     }
   };
 
-
-
   const onSpeechStart = async (e) => {
-    console.log('Voice started');
+    console.log('user started talking');
   };
 
   // Event listener for when speech recognition ends.
   const speechEnd = async (e) => {
-    console.log('Voice ended');
+    console.log('user stopped ended talking');
   };
 
   const speechResults = async (event) => {
@@ -101,7 +98,7 @@ const Translator= () => {
   const speakText = async (text) => {
     try { 
       Tts.speak(text);
-      console.log('done talking');
+      console.log('in speakText() fucntion');
     } catch (error) {
       console.error('Error speaking text:', error);
     }
@@ -109,7 +106,7 @@ const Translator= () => {
   
   // Event listener for tts-start event
   const handleTtsStart = async (event) => {
-    console.log('TTS started talking');
+    console.log('phone started talking');
     // Handle tts-start event
   }
   
@@ -117,13 +114,13 @@ const Translator= () => {
   const handleTtsProgress = (event) => {
     //console.log('TTS progress:', event);
     // Handle tts-progress event
-    console.log("talking")
+    console.log("phone is talking")
   };
   
   // Event listener for tts-finish event
   const handleTtsFinish = async (event) => {
     // Handle tts-finish event
-    console.log("done talking")
+    console.log("phone is done talking")
     
   };
 
