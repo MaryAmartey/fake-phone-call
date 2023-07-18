@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Button, TouchableOpacity } from 'react-native';
-import Voice from 'react-native-voice';
+import Voice from '@react-native-voice/voice';
 import Tts from 'react-native-tts';
+
 
 const Translator= () => {
   const [isListening, setIsListening] = useState(false);  
@@ -35,11 +36,11 @@ const Translator= () => {
   }, []);
 
      
-  /*useEffect(() => {
+  useEffect(() => {
     if(isPhrase){
       Tts.speak("")
     }
-  }, [isPhrase]);*/
+  }, [isPhrase]);
 
 
   const startListening = async () => {
@@ -84,7 +85,7 @@ const Translator= () => {
       silenceTimer = setTimeout( async() => {
         isPhraseTemp = true
         setIsPhrase(true);
-        //await Voice.stop()
+        await Voice.stop()
         console.log("timer is over")
         const response = "I love chocolate chip cookies"
         console.log("is going to speak")
@@ -123,10 +124,10 @@ const Translator= () => {
   const handleTtsFinish = async (event) => {
     // Handle tts-finish event
     console.log("phone is done talking")
-    //isPhraseTemp = undefined
+    isPhraseTemp = undefined
     setIsPhrase(undefined);
     try {
-    // Voice.start('en-US');
+     Voice.start('en-US');
     } catch (error) {
       console.error('Failed to start listening:', error);
     }
