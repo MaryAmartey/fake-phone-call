@@ -5,18 +5,18 @@ import Tts from 'react-native-tts';
 
 const Translator= () => {
   const [isListening, setIsListening] = useState(false);  
-  const [spokenPhrase, setSpokenPhrase] = useState();
+  const [isPhrase, setIsPhrase] = useState(false);
   const [speechResults, setSpeechResults] = useState();
+  const [spokenPhrase, setSpokenPhrase] = useState();
   const [silenceTimer, setSilenceTimer] = useState();
    
   useEffect(() => {
-    Voice.onSpeechStart = handleSpeechStart;
     Voice.onSpeechResults = handleSpeechResults;
-    Voice.onSpeechEnd = handleSpeechEnd;
+    Voice.onSpeechEnd = startVoice;
 
-    Tts.addEventListener('tts-finish', handleTtsFinish);
+    Tts.addEventListener('tts-finish', stopVoice);
 
-   return () => {
+    return () => {
       Voice.destroy().then(Voice.removeAllListeners);
       clearTimeout(silenceTimer);
     };
@@ -27,17 +27,18 @@ const Translator= () => {
   }, [isListening])
 
   useEffect(() => {
-    if (!spokenPhrase) {
+    if (isListening && !isPhrase && speechResults) {
       clearTimeout(silenceTimer)
 
       setSilenceTimer(setTimeout(() => {
         setSpokenPhrase(speechResults);
+        setIsPhrase(true);
       }, 3000));
     }
   }, [speechResults])
 
   useEffect(() => {
-    if (spokenPhrase) {
+    if (isListening && spokenPhrase) {
       speakText("I love chocolate chip cookies") 
     }
   }, [spokenPhrase])
@@ -51,6 +52,10 @@ const Translator= () => {
   };
 
   const startVoice = async () => {
+    setSpeechResults(undefined);
+    setSpokenPhrase(undefined);
+    setIsPhrase(false);
+
     await Voice.isAvailable();
     await Voice.start('en-US');
   }
@@ -58,14 +63,6 @@ const Translator= () => {
   const stopVoice = async () => {
     await Voice.stop();
   }
-
-  const handleSpeechStart = (e) => {
-    setSpokenPhrase(undefined);
-  };
-
-  const handleSpeechEnd = (e) => {
-    startVoice();
-  };
 
   const handleSpeechResults = (event) => {
     setSpeechResults(event.value[0]);
@@ -77,10 +74,6 @@ const Translator= () => {
     } catch (error) {
       console.error('Error speaking text:', error);
     }
-  };
-  
-  const handleTtsFinish = async (event) => {
-    await stopVoice();
   };
 
   return (
@@ -95,7 +88,8 @@ const Translator= () => {
         <Text>Stop Listening</Text>
         </TouchableOpacity>
       )}
-      <Text>Spoken Phrase: {spokenPhrase}</Text>
+      {isListening && !isPhrase && <Text>Speech Results: {speechResults}</Text>}
+      {isListening && isPhrase && <Text>Spoken Phrase: {spokenPhrase}</Text>}
     </View>
   );
 };
