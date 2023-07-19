@@ -1,147 +1,109 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Voice from 'react-native-voice';
 import Tts from 'react-native-tts';
 
-const Translator= () => {
-  const [isListening, setIsListening] = useState(false);  
-  const [isPhrase, setIsPhrase] = useState(undefined); 
-  const [spokenPhrase, setSpokenPhrase] = useState('');
-  //const [silenceTimer, setSilenceTimer] = useState(null);
-  const websocketRef = useRef(null); 
-  let silenceTimer; 
-  let isPhraseTemp = undefined
- // let isPhrase = undefined
-  //const [spealing, isSpeakinh] = useState('');
+const Translator = () => {
+  const [isListening, setIsListening] = useState(false);
+  const [isPhrase, setIsPhrase] = useState(false);
+  const [speechResults, setSpeechResults] = useState();
+  const [spokenPhrase, setSpokenPhrase] = useState();
+  const [silenceTimer, setSilenceTimer] = useState();
 
-   
   useEffect(() => {
-    // Set up voice recognition event listeners.
-    Voice.onSpeechStart = handleSpeechStart;
     Voice.onSpeechResults = handleSpeechResults;
-   // Voice.onSpeechEnd = handleSpeechEnd;
+    Voice.onSpeechEnd = startVoice;
 
-    // Register event listeners for TTS events
-    console.log("subscribing")
-    Tts.addEventListener('tts-start', handleTtsStart);
-    Tts.addEventListener('tts-progress', handleTtsProgress);
-    Tts.addEventListener('tts-finish', handleTtsFinish);
+    Tts.addEventListener('tts-finish', stopVoice);
 
-
-   return () => {
+    return () => {
+      clearTimeout(silenceTimer);
       Voice.destroy().then(Voice.removeAllListeners);
-      //clearTimeout(silenceTimer);
     };
   }, []);
 
-     
-  /*useEffect(() => {
-    if(isPhrase){
-      Tts.speak("")
+  useEffect(() => {
+    isListening ? startVoice() : stopVoice();
+  }, [isListening])
+
+  useEffect(() => {
+    //
+    if (isListening && speechResults) {
+      // TODO: If speechResults contains keywords, connect to emergency services, else execute logic below
+      if (!isPhrase) {
+        clearTimeout(silenceTimer)
+
+        setSilenceTimer(setTimeout(() => {
+          if (isListening) {
+            setSpokenPhrase(speechResults);
+            setIsPhrase(true);
+          }
+        }, 1500));
+      }
     }
-  }, [isPhrase]);*/
+  }, [speechResults])
 
+  useEffect(() => {
+    if (isListening && spokenPhrase) {
 
-  const startListening = async () => {
-    try {
-      setIsPhrase(undefined);
-      await Voice.isAvailable();
-      await Voice.start('en-US');
-      setIsListening(true);
-    } catch (error) {
-      console.error('Failed to start listening:', error);
+      // speakText("I'm thinking...");
+      // const response = queryLangChain(spokenPhrase);
+      // speakText(response);
+
+      const response = "I love chocolate chip cookies";
+      speakText(response)
     }
+  }, [spokenPhrase])
+
+  const startListening = () => {
+    setIsListening(true);
   };
 
-  const stopListening =  () => {
-    try {
-      setIsPhrase(undefined);
-      Voice.stop();
-      setIsListening(false)
-      console.log("mic stopped listening")
-      console.log(isPhrase)
-    } catch (error) {
-      console.error('Failed to stop listening:', error);
-    }
+  const stopListening = () => {
+    setIsListening(false)
   };
 
-  const handleSpeechStart = (e) => {
-    console.log('user started talking');
-    //clearTimeout(silenceTimer);  // Reset the silence timer when the user starts speaking
-  };
+  const startVoice = async () => {
+    setSpeechResults(undefined);
+    setSpokenPhrase(undefined);
+    setIsPhrase(false);
 
-  // Event listener for when speech recognition ends.
-  const handleSpeechEnd = (e) => {
-    console.log('user stopped talking');
-    //keep listening
-     // Set a timer to stop listening after 3 seconds of silence
-  };
-
-  const handleSpeechResults =  (event) => {
-    console.log(isPhrase)
-    if(!isPhraseTemp){
-      clearTimeout(silenceTimer)
-      silenceTimer = setTimeout( async() => {
-        isPhraseTemp = true
-        setIsPhrase(true);
-        //await Voice.stop()
-        console.log("timer is over")
-        const response = "I love chocolate chip cookies"
-        console.log("is going to speak")
-      // speakText(response) 
-       Tts.speak(response)
-       // const spokenText = event.value[0];
-        //setSpokenPhrase(spokenText);
-      }, 3000);
-    } 
+    await Voice.isAvailable();
+    await Voice.start('en-US');
   }
 
+  const stopVoice = async () => {
+    await Voice.stop();
+  }
+
+  const handleSpeechResults = (event) => {
+    setSpeechResults(event.value[0]);
+  }
 
   const speakText = (text) => {
-    try { 
+    try {
       Tts.speak(text);
-      //console.log('speaking');
     } catch (error) {
       console.error('Error speaking text:', error);
-    }
-  };
-  
-  // Event listener for tts-start event
-  const handleTtsStart = async (event) => {
-   console.log('phone started talking');
-    // Handle tts-start event
-  }
-  
-  // Event listener for tts-progress event
-  const handleTtsProgress = (event) => {
-    //console.log('TTS progress:', event);
-    // Handle tts-progress event
-   // console.log("phone is talking")
-  };
-  
-  // Event listener for tts-finish event
-  const handleTtsFinish = async (event) => {
-    // Handle tts-finish event
-    console.log("phone is done talking")
-    //isPhraseTemp = undefined
-    setIsPhrase(undefined);
-    try {
-    // Voice.start('en-US');
-    } catch (error) {
-      console.error('Failed to start listening:', error);
     }
   };
 
   return (
     <View>
-      <TouchableOpacity onPress={startListening} disabled={isListening}>
-        <Text>Start Listening</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={stopListening} disabled={!isListening}>
-        <Text>Stop Listening</Text>
-      </TouchableOpacity>
-      <Text>Spoken Phrase: {spokenPhrase}</Text>
+      {!isListening && (
+        <TouchableOpacity onPress={startListening} disabled={isListening}>
+          <Text>Start Listening</Text>
+        </TouchableOpacity>
+      )}
+      {isListening && (
+        <TouchableOpacity onPress={stopListening} disabled={!isListening}>
+          <Text>Stop Listening</Text>
+        </TouchableOpacity>
+      )}
+      {isListening && !isPhrase && <Text>Speech Results: {speechResults}</Text>}
+      {isListening && isPhrase && <Text>Spoken Phrase: {spokenPhrase}</Text>}
     </View>
+
   );
 };
 
