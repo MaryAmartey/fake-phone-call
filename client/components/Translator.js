@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Voice from 'react-native-voice';
 import Tts from 'react-native-tts';
 
-const Translator= () => {
-  const [isListening, setIsListening] = useState(false);  
+const Translator = () => {
+  const [isListening, setIsListening] = useState(false);
   const [isPhrase, setIsPhrase] = useState(false);
   const [speechResults, setSpeechResults] = useState();
   const [spokenPhrase, setSpokenPhrase] = useState();
   const [silenceTimer, setSilenceTimer] = useState();
-   
+
   useEffect(() => {
     Voice.onSpeechResults = handleSpeechResults;
     Voice.onSpeechEnd = startVoice;
@@ -17,8 +17,8 @@ const Translator= () => {
     Tts.addEventListener('tts-finish', stopVoice);
 
     return () => {
-      Voice.destroy().then(Voice.removeAllListeners);
       clearTimeout(silenceTimer);
+      Voice.destroy().then(Voice.removeAllListeners);
     };
   }, []);
 
@@ -27,27 +27,39 @@ const Translator= () => {
   }, [isListening])
 
   useEffect(() => {
-    if (isListening && !isPhrase && speechResults) {
-      clearTimeout(silenceTimer)
+    //
+    if (isListening && speechResults) {
+      // TODO: If speechResults contains keywords, connect to emergency services, else execute logic below
+      if (!isPhrase) {
+        clearTimeout(silenceTimer)
 
-      setSilenceTimer(setTimeout(() => {
-        setSpokenPhrase(speechResults);
-        setIsPhrase(true);
-      }, 3000));
+        setSilenceTimer(setTimeout(() => {
+          if (isListening) {
+            setSpokenPhrase(speechResults);
+            setIsPhrase(true);
+          }
+        }, 1500));
+      }
     }
   }, [speechResults])
 
   useEffect(() => {
     if (isListening && spokenPhrase) {
-      speakText("I love chocolate chip cookies") 
+
+      // speakText("I'm thinking...");
+      // const response = queryLangChain(spokenPhrase);
+      // speakText(response);
+
+      const response = "I love chocolate chip cookies";
+      speakText(response)
     }
   }, [spokenPhrase])
 
-  const startListening = async () => {
+  const startListening = () => {
     setIsListening(true);
   };
 
-  const stopListening = async () => {
+  const stopListening = () => {
     setIsListening(false)
   };
 
@@ -69,7 +81,7 @@ const Translator= () => {
   }
 
   const speakText = (text) => {
-    try { 
+    try {
       Tts.speak(text);
     } catch (error) {
       console.error('Error speaking text:', error);
@@ -80,17 +92,18 @@ const Translator= () => {
     <View>
       {!isListening && (
         <TouchableOpacity onPress={startListening} disabled={isListening}>
-        <Text>Start Listening</Text>
+          <Text>Start Listening</Text>
         </TouchableOpacity>
       )}
       {isListening && (
         <TouchableOpacity onPress={stopListening} disabled={!isListening}>
-        <Text>Stop Listening</Text>
+          <Text>Stop Listening</Text>
         </TouchableOpacity>
       )}
       {isListening && !isPhrase && <Text>Speech Results: {speechResults}</Text>}
       {isListening && isPhrase && <Text>Spoken Phrase: {spokenPhrase}</Text>}
     </View>
+
   );
 };
 
