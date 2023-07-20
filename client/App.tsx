@@ -1,118 +1,56 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import { NativeBaseProvider, extendTheme, Box, Button, CheckIcon, HStack, Text, Avatar, Divider, Heading } from 'native-base';
+import { Dimensions, ImageBackground, ImageSourcePropType } from 'react-native';
+import { LinearGradient } from 'react-native-svg';
+import Translator from './components/Translator';
+import InitiateCall from './components/InitiateCall';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+// Extend the theme to include the desired background color
+const theme = extendTheme({
+  colors: {
+    brand: {
+      500: '#6B46C1', // Define your custom black-purple color
+    },
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  config: {
+    initialColorMode: 'light', // Set the initial color mode (optional)
   },
 });
+
+function App(): JSX.Element {
+  const { width } = Dimensions.get('window');
+  const avatarSize = width /1.2;
+  const backgroundImage = require('./assets/javier-miranda-xB2XP29gn10-unsplash.jpg');
+  return (
+    <NativeBaseProvider theme={theme}>
+       <ImageBackground
+        source={backgroundImage}
+        style={{
+          flex: 1,
+          padding: 4,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          
+         
+        <Box w="260" my="16">
+          <Heading mx="3" fontSize="4xl" color="muted.200" textAlign="center" flexDirection="row">
+          Polaris
+          </Heading>
+          <Divider my="2" _light={{ bg: "muted.300" }} _dark={{bg: "muted.50"}} />
+        </Box>
+          <Box
+            flex={1}
+            p={4}
+            justifyContent="flex-end"
+            alignItems="center"
+          >
+          <Translator/>
+      </Box>
+        
+        </ImageBackground>
+    </NativeBaseProvider>
+  );
+}
 
 export default App;
