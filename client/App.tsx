@@ -3,6 +3,7 @@ import { NativeBaseProvider, extendTheme, Box, Button, CheckIcon, HStack, Text, 
 import { Dimensions, ImageBackground, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'react-native-svg';
 import Translator from './components/Translator';
+import InitiateCall from './components/InitiateCall';
 
 // Extend the theme to include the desired background color
 const theme = extendTheme({

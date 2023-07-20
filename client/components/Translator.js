@@ -5,7 +5,7 @@ import Tts from 'react-native-tts';
 
 const Translator = () => {
   const [isListening, setIsListening] = useState(false);
-  const [isPhrase, setIsPhrase] = useState(false);
+  const [isPhrase,setIsPhrase] = useState(false);
   const [speechResults, setSpeechResults] = useState();
   const [spokenPhrase, setSpokenPhrase] = useState();
   const [silenceTimer, setSilenceTimer] = useState();
@@ -64,12 +64,13 @@ const Translator = () => {
   };
 
   const startVoice = async () => {
-    setSpeechResults(undefined);
-    setSpokenPhrase(undefined);
-    setIsPhrase(false);
-
-    await Voice.isAvailable();
-    await Voice.start('en-US');
+    setTimeout(async()=>{
+      setSpeechResults(undefined);
+      setSpokenPhrase(undefined);
+      setIsPhrase(false);
+      await Voice.isAvailable();
+      await Voice.start('en-US');
+    }, (250))  
   }
 
   const stopVoice = async () => {
@@ -87,6 +88,8 @@ const Translator = () => {
       console.error('Error speaking text:', error);
     }
   };
+
+   
 
   return (
     <View>
