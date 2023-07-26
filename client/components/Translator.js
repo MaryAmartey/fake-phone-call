@@ -1,20 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Voice from 'react-native-voice';
 import Tts from 'react-native-tts';
+import CallScreen from './CallScreen';
+import { useNavigation } from '@react-navigation/native';
 
 const Translator = () => {
+  const navigation = useNavigation();
   const [isListening, setIsListening] = useState(false);
   const [isPhrase,setIsPhrase] = useState(false);
   const [speechResults, setSpeechResults] = useState();
   const [spokenPhrase, setSpokenPhrase] = useState();
   const [silenceTimer, setSilenceTimer] = useState();
+  const websocketRef = useRef(null);
 
   useEffect(() => {
     Voice.onSpeechResults = handleSpeechResults;
     Voice.onSpeechEnd = startVoice;
 
     Tts.addEventListener('tts-finish', stopVoice);
+    Tts.setDefaultRate(0.45); // Set speech rate (0.5 is normal; adjust as needed)
+    Tts.setDefaultPitch(1.6);
+
+
+
 
     return () => {
       clearTimeout(silenceTimer);
@@ -49,18 +58,31 @@ const Translator = () => {
       // speakText("I'm thinking...");
       // const response = queryLangChain(spokenPhrase);
       // speakText(response);
-
-      const response = "I love chocolate chip cookies";
-      speakText(response)
+      websocketRef.current.send(spokenPhrase)
+      websocketRef.current.onmessage = (event) => {
+        const response = event.data
+        console.log('Received response from WebSocket:', response);
+        speakText(response);
+      };
     }
   }, [spokenPhrase])
 
   const startListening = () => {
+    websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
+      websocketRef.current.onopen = () => {
+        console.log('WebSocket connected');
+      };
     setIsListening(true);
+    handleStartCall()
   };
 
   const stopListening = () => {
     setIsListening(false)
+    if (websocketRef.current) {
+      websocketRef.current.close();
+      websocketRef.current = null;
+      console.log('WebSocket disconnected');
+    }
   };
 
   const startVoice = async () => {
@@ -70,7 +92,7 @@ const Translator = () => {
       setIsPhrase(false);
       await Voice.isAvailable();
       await Voice.start('en-US');
-    }, (250))  
+    }, (500))  
   }
 
   const stopVoice = async () => {
@@ -86,6 +108,14 @@ const Translator = () => {
       Tts.speak(text);
     } catch (error) {
       console.error('Error speaking text:', error);
+    }
+  };
+
+  const handleStartCall = () => {
+    try {
+      navigation.navigate('CallScreen'); 
+    } catch (error) {
+      console.error('An error occurred during the start call:', error.message);
     }
   };
 
@@ -105,6 +135,7 @@ const Translator = () => {
       )}
       {isListening && !isPhrase && <Text>Speech Results: {speechResults}</Text>}
       {isListening && isPhrase && <Text>Spoken Phrase: {spokenPhrase}</Text>}
+      
     </View>
 
   );

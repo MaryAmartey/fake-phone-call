@@ -1,23 +1,24 @@
 import React, {useCallback} from 'react';
 import {Alert, Button, Linking, StyleSheet, View} from 'react-native';
 
-const supportedURL = 'https://google.com';
-
-const unsupportedURL = 'slack://open?team=123456';
+const phoneNumber = '6147041199';
 
 const OpenURLButton = ({url, children}) => {
   const handlePress = useCallback(async () => {
-    // Checking if the link is supported for links with custom URL scheme.
-    const supported = await Linking.canOpenURL(url);
-
-    if (supported) {
-      // Opening the link with some app, if the URL scheme is "http" the web link should be opened
-      // by some browser in the mobile
+    
+    if (url.startsWith('tel:')) {
+      // If the URL starts with 'tel:', it's a phone number
       await Linking.openURL(url);
     } else {
-      Alert.alert(`Don't know how to open this URL: ${url}`);
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert(`Don't know how to open this URL: ${url}`);
+      }
     }
   }, [url]);
+
 
   return <Button title={children} onPress={handlePress} />;
 };
@@ -25,8 +26,7 @@ const OpenURLButton = ({url, children}) => {
 const InitiateCall = () => {
   return (
     <View style={styles.container}>
-      <OpenURLButton url={supportedURL}>Open Supported URL</OpenURLButton>
-      <OpenURLButton url={unsupportedURL}>Open Unsupported URL</OpenURLButton>
+      <OpenURLButton url={`tel:${phoneNumber}`}>Call</OpenURLButton>
     </View>
   );
 };
