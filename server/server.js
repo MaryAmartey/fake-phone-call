@@ -32,7 +32,7 @@ wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     text = message.toString('utf-8');
     console.log('Received message:', text);
-    //response = "Hi there! I'm your friendly voice assistant. How can I help you? "
+    //response = "Hi! I sent the info from server sent"
     response = await executorFunction(text)
     // Send a response back to the WebSocket client
     console.log("response:", response)

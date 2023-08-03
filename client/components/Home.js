@@ -1,8 +1,11 @@
 import React from 'react';
 import { NativeBaseProvider, extendTheme, Box, Button, CheckIcon, HStack, Text, Avatar, Divider, Heading } from 'native-base';
 import { Dimensions, ImageBackground, ImageSourcePropType } from 'react-native';
+import SendSMS from './SendSMS';
+import { View, TouchableOpacity } from 'react-native';
+import Navigation from './Navigation';
+import { useNavigation } from '@react-navigation/native';
 import Translator from './Translator';
-import InitiateCall from './InitiateCall';
 // Extend the theme to include the desired background color
 const theme = extendTheme({
   colors: {
@@ -17,6 +20,7 @@ const theme = extendTheme({
 
 const Home=({navigation}) =>{
   //const { width } = Dimensions.get('window');
+  
   const backgroundImage = require('../assets/javier-miranda-xB2XP29gn10-unsplash.jpg');
   return (
         <ImageBackground
@@ -29,7 +33,7 @@ const Home=({navigation}) =>{
             }}>
           <Box w="260" my="16">
             <Heading mx="3" fontSize="4xl" color="muted.200" textAlign="center" flexDirection="row">
-            Polaris
+            Google Bes
             </Heading>
             <Divider my="2" _light={{ bg: "muted.300" }} _dark={{bg: "muted.50"}} />
           </Box>
@@ -39,10 +43,18 @@ const Home=({navigation}) =>{
               justifyContent="flex-end"
               alignItems="center">
           </Box>
-          <Box my="16">
-            <Translator/> 
-          </Box>
-        </ImageBackground>
+          <Box
+            position="absolute"
+            bottom={0}
+            left={0}
+            right={0}
+            p={4}
+          >
+        <Navigation />
+        <SendSMS/>
+      </Box>
+      </ImageBackground>
+        
   );
 }
 

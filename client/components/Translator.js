@@ -1,9 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable, Center, Icon} from 'react-native';
 import Voice from 'react-native-voice';
 import Tts from 'react-native-tts';
-import CallScreen from './CallScreen';
 import { useNavigation } from '@react-navigation/native';
+import ResponsePhrasesData from './ReponsePhrasesData'
+import Ionicon from 'react-native-vector-icons/Ionicons';
+import MaterialCommunityIcon from  'react-native-vector-icons/MaterialCommunityIcons'
+import { Box } from 'native-base';
+import CallScreen from './CallScreen';
+import Navigation from './Navigation';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Translator = () => {
   const navigation = useNavigation();
@@ -12,18 +18,22 @@ const Translator = () => {
   const [speechResults, setSpeechResults] = useState();
   const [spokenPhrase, setSpokenPhrase] = useState();
   const [silenceTimer, setSilenceTimer] = useState();
+  //const [isProcessing, setIsProcessing] = useState(false);
+  const [doneProcessing, setDoneProcessing] = useState(false);
+  const isProcessingRef = useRef(false)
   const websocketRef = useRef(null);
+  const [callKeyword, setCallKeyword] = useState("");
+  const [sendMessageKeyword, setSendMessageKeyword] = useState("");
+
 
   useEffect(() => {
     Voice.onSpeechResults = handleSpeechResults;
     Voice.onSpeechEnd = startVoice;
 
     Tts.addEventListener('tts-finish', stopVoice);
+    
     Tts.setDefaultRate(0.45); // Set speech rate (0.5 is normal; adjust as needed)
-    Tts.setDefaultPitch(1.6);
-
-
-
+    Tts.setDefaultPitch(1.0);
 
     return () => {
       clearTimeout(silenceTimer);
@@ -36,7 +46,6 @@ const Translator = () => {
   }, [isListening])
 
   useEffect(() => {
-    //
     if (isListening && speechResults) {
       // TODO: If speechResults contains keywords, connect to emergency services, else execute logic below
       if (!isPhrase) {
@@ -44,8 +53,11 @@ const Translator = () => {
 
         setSilenceTimer(setTimeout(() => {
           if (isListening) {
-            setSpokenPhrase(speechResults);
             setIsPhrase(true);
+            isProcessingRef.current = true
+            console.log("what");
+            console.log("1",isProcessingRef.current)
+            setSpokenPhrase(speechResults);
           }
         }, 1500));
       }
@@ -53,27 +65,45 @@ const Translator = () => {
   }, [speechResults])
 
   useEffect(() => {
-    if (isListening && spokenPhrase) {
-
-      // speakText("I'm thinking...");
-      // const response = queryLangChain(spokenPhrase);
-      // speakText(response);
+    console.log(spokenPhrase)
+    console.log("2",isProcessingRef.current)
+    if (isListening && spokenPhrase && isProcessingRef.current) {
       websocketRef.current.send(spokenPhrase)
-      websocketRef.current.onmessage = (event) => {
-        const response = event.data
-        console.log('Received response from WebSocket:', response);
-        speakText(response);
-      };
+      const phrase = getRandomPhrase()
+      console.log("1")
+      speakText(phrase);
+      isProcessingRef.current =false
     }
   }, [spokenPhrase])
 
+ useEffect(() => {
+    if(isListening && doneProcessing){
+      isProcessingRef.current =true
+    }
+  }, [doneProcessing])
+
+const stopVoice = async () => {
+  if(isProcessingRef.current ==false){
+    console.log("lucy")
+    setDoneProcessing(true)
+  }
+  else{
+    console.log("mary")
+    await Voice.stop();
+  }
+}
   const startListening = () => {
+    console.log("started listening");
     websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
       websocketRef.current.onopen = () => {
         console.log('WebSocket connected');
       };
+    websocketRef.current.onmessage = (event) => {
+      const response = event.data;
+      console.log('Received response from WebSocket:', response);
+      speakText(response);
+    };
     setIsListening(true);
-    handleStartCall()
   };
 
   const stopListening = () => {
@@ -87,17 +117,18 @@ const Translator = () => {
 
   const startVoice = async () => {
     setTimeout(async()=>{
+      console.log("calling start")
       setSpeechResults(undefined);
       setSpokenPhrase(undefined);
       setIsPhrase(false);
+      setDoneProcessing(false);
+      isProcessingRef.current =false;
       await Voice.isAvailable();
       await Voice.start('en-US');
     }, (500))  
   }
 
-  const stopVoice = async () => {
-    await Voice.stop();
-  }
+
 
   const handleSpeechResults = (event) => {
     setSpeechResults(event.value[0]);
@@ -111,33 +142,47 @@ const Translator = () => {
     }
   };
 
-  const handleStartCall = () => {
+
+  const getRandomPhrase = () => {
+    const responsePhrases = ResponsePhrasesData(); 
+    const randomIndex = Math.floor(Math.random() * responsePhrases.length);
+    return responsePhrases[randomIndex];
+  };
+
+  useEffect(() => {
+    // Load saved keywords from AsyncStorage when the component mounts
+    loadKeywords();
+  }, []);
+
+  const loadKeywords = async () => {
     try {
-      navigation.navigate('CallScreen'); 
+      const callKeywordValue = await AsyncStorage.getItem('callKeyword');
+      const sendMessageKeywordValue = await AsyncStorage.getItem('sendMessageKeyword');
+
+      if (callKeywordValue !== null) {
+        setCallKeyword(callKeywordValue);
+      }
+
+      if (sendMessageKeywordValue !== null) {
+        setSendMessageKeyword(sendMessageKeywordValue);
+      }
     } catch (error) {
-      console.error('An error occurred during the start call:', error.message);
+      console.log('Error loading keywords from AsyncStorage:', error);
     }
   };
 
-   
+  const clickTest = () => {
+    console.log("test")
+}
+
 
   return (
     <View>
-      {!isListening && (
-        <TouchableOpacity onPress={startListening} disabled={isListening}>
-          <Text>Start Listening</Text>
-        </TouchableOpacity>
-      )}
-      {isListening && (
-        <TouchableOpacity onPress={stopListening} disabled={!isListening}>
-          <Text>Stop Listening</Text>
-        </TouchableOpacity>
-      )}
-      {isListening && !isPhrase && <Text>Speech Results: {speechResults}</Text>}
-      {isListening && isPhrase && <Text>Spoken Phrase: {spokenPhrase}</Text>}
-      
-    </View>
-
+      <Navigation clickTest={clickTest} />
+    <Text> 
+    {callKeyword}
+      </Text>
+  </View>
   );
 };
 
