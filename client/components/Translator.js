@@ -1,18 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { View, Text, TouchableOpacity, Pressable, Center, Icon} from 'react-native';
 import Voice from 'react-native-voice';
 import Tts from 'react-native-tts';
-import { useNavigation } from '@react-navigation/native';
 import ResponsePhrasesData from './ReponsePhrasesData'
-import Ionicon from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcon from  'react-native-vector-icons/MaterialCommunityIcons'
-import { Box } from 'native-base';
-import CallScreen from './CallScreen';
-import Navigation from './Navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Context from './Context';
 
 const Translator = () => {
-  const navigation = useNavigation();
   const [isListening, setIsListening] = useState(false);
   const [isPhrase,setIsPhrase] = useState(false);
   const [speechResults, setSpeechResults] = useState();
@@ -24,6 +18,18 @@ const Translator = () => {
   const websocketRef = useRef(null);
   const [callKeyword, setCallKeyword] = useState("");
   const [sendMessageKeyword, setSendMessageKeyword] = useState("");
+  const {isCalling}  = useContext(Context);
+
+
+  useEffect(() => {
+    console.log("isCalling", isCalling)
+    if(isCalling){
+      startListening()
+    }
+    if(!isCalling){
+      stopListening()
+    }
+  }, [isCalling])
 
 
   useEffect(() => {
@@ -108,6 +114,7 @@ const stopVoice = async () => {
 
   const stopListening = () => {
     setIsListening(false)
+    console.log("stopped listening");
     if (websocketRef.current) {
       websocketRef.current.close();
       websocketRef.current = null;
@@ -127,7 +134,6 @@ const stopVoice = async () => {
       await Voice.start('en-US');
     }, (500))  
   }
-
 
 
   const handleSpeechResults = (event) => {
@@ -171,19 +177,6 @@ const stopVoice = async () => {
     }
   };
 
-  const clickTest = () => {
-    console.log("test")
-}
-
-
-  return (
-    <View>
-      <Navigation clickTest={clickTest} />
-    <Text> 
-    {callKeyword}
-      </Text>
-  </View>
-  );
 };
 
 export default Translator;

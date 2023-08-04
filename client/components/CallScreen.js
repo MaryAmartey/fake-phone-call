@@ -8,21 +8,28 @@ import MaterialCommunityIcon from  'react-native-vector-icons/MaterialCommunityI
 import MaterialIcon from  'react-native-vector-icons/MaterialIcons'
 import Translator from './Translator';
 import { useNavigation } from '@react-navigation/native';
+import Context from './Context';
+import {useContext} from 'react';
 
-
-const CallScreen = ({props}) => {
+const CallScreen = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const navigation = useNavigation();
+  const [doneCalling, setDoneCalling] = useState(false);
 
   const handleAlertClose = () => {
     setIsAlertVisible(prev => !prev )
   };
 
+  const {isCalling, setIsCalling } = useContext(Context);
+
   const handleEndCall = () => {
     try {
-      navigation.navigate('Home'); 
-      props.stopListening()
+      console.log("in handleend call")
+      setIsCalling(false)
+      setTimeout(() => {
+        navigation.navigate('Home');// Make sure you are using the correct setIsCalling from the context
+      }, 500);
     } catch (error) {
       console.error('An error occurred during the end call:', error.message);
     }
@@ -45,6 +52,7 @@ const CallScreen = ({props}) => {
 
   
   return (
+    
     <LinearGradient colors={['#333333', '#000000']} style={styles.container}>
    
       {/* Header */}
@@ -130,7 +138,7 @@ const CallScreen = ({props}) => {
       <TouchableOpacity  onPress={handleEndCall} danger style={styles.endCallButton} >
         <MaterialCommunityIcon style={styles.icon} name="phone-hangup" />
       </TouchableOpacity>
-
+      {!isCalling && <Translator/>}
     </LinearGradient>
   );
 };

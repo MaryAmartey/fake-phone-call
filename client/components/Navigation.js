@@ -5,21 +5,24 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeBaseProvider, Pressable, Box, HStack, Center, Icon, Text} from 'native-base';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import Translator from './Translator';
-
-const Navigation = ({clickTest}) => {
-  //console.log(props)
-  const [selected, setSelected] = React.useState(0);
+import Context from './Context';
+import {useContext} from 'react';
+const Navigation = () => {
+  //console.log("this is props",props)
+  const [selected, setSelected] = useState(0);
   const [value, setValue] = React.useState('recents');
 
+  const {isCalling, setIsCalling } = useContext(Context);
   const navigation = useNavigation();
   const handleChange = () => {
     setValue(newValue);
   };
 
+
   const handleStartCall = () => {
     try {
       navigation.navigate('CallScreen'); 
-      clickTest();
+      setIsCalling(true)
     } catch (error) {
       console.error('An error occurred during the end call:', error.message);
     }
@@ -28,7 +31,6 @@ const Navigation = ({clickTest}) => {
   const openSetting = () => {
     try {
       navigation.navigate('Setting'); 
-      clickTest();
     } catch (error) {
       console.error('An error occurred during the end call:', error.message);
     }
@@ -73,6 +75,7 @@ const Navigation = ({clickTest}) => {
           </Center>
         </Pressable>
       </HStack>
+     {isCalling && <Translator/>}
     </Box>
     </NativeBaseProvider>
   );

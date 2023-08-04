@@ -4,9 +4,9 @@ import { Select } from "native-base";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Navigation from './Navigation';
 
-const Setting= ({ navigation }) =>{
-  const [service, setService] = useState("");
+const Setting= () =>{
   const [callKeyword, setCallKeyword] = useState("");
   const [sendMessageKeyword, setSendMessageKeyword] = useState("");
   const [firstContact, setFirstContact] = useState("");
@@ -154,7 +154,7 @@ return (
    right={0}
    p={4}
  >
-
+  <Navigation/>
 </Box>
 </>
   );

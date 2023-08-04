@@ -52,6 +52,7 @@ const Home=({navigation}) =>{
           >
         <Navigation />
         <SendSMS/>
+       
       </Box>
       </ImageBackground>
         
