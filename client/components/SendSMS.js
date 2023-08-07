@@ -86,7 +86,7 @@ const SendSMS = ({sendMsg}) => {
        const message = `My current location: Latitude - ${location.current.latitude.toFixed(6)}, Longitude - ${location.current.longitude.toFixed(6)}`;
 
        // Send the message to the backend server using fetch
-       const response = await fetch('http://localhost:8080/sendSMS', {
+       const response = await fetch('https://fake-phone-call.onrender.com/sendSMS', {
          method: 'POST',
          headers: {
            'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ const SendSMS = ({sendMsg}) => {
        if (response.ok) {
          Alert.alert('SMS Sent!', 'Your message has been sent successfully.');
        } else {
-        
+
          Alert.alert('Error', 'Failed to send the SMS. Please try again later.');
        }
      

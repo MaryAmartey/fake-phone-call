@@ -60,7 +60,7 @@ const Translator = () => {
         setstartCallByKey(true);
         // Additional logic or actions can be performed here
         stopListening()
-        //Stop running the rest of the code
+        // Stop running the rest of the code
         return;
       }
       // TODO: If speechResults contains keywords, connect to emergency services, else execute logic below
@@ -109,7 +109,7 @@ const stopVoice = async () => {
 }
   const startListening = () => {
     console.log("started listening");
-    websocketRef.current = new WebSocket('wss://fake-phone-call.onrender.com');
+    websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
       websocketRef.current.onopen = () => {
         console.log('WebSocket connected');
       };
