@@ -37,10 +37,9 @@ const Translator = () => {
     Voice.onSpeechEnd = startVoice;
 
     Tts.addEventListener('tts-finish', stopVoice);
-    
+  
     Tts.setDefaultRate(0.45); // Set speech rate (0.5 is normal; adjust as needed)
     Tts.setDefaultPitch(1.0);
-
     return () => {
       clearTimeout(silenceTimer);
       Voice.destroy().then(Voice.removeAllListeners);

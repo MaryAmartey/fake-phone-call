@@ -50,9 +50,8 @@ const Home=({navigation}) =>{
             right={0}
             p={4}
           >
-        <Navigation />
-        <SendSMS/>
-       
+        <Navigation selected ={0}/>
+       <SendSMS/>
       </Box>
       </ImageBackground>
         

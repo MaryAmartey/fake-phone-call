@@ -7,22 +7,29 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 import Translator from './Translator';
 import Context from './Context';
 import {useContext} from 'react';
-const Navigation = () => {
-  //console.log("this is props",props)
-  const [selected, setSelected] = useState(0);
-  const [value, setValue] = React.useState('recents');
+const Navigation = ({selected}) => {
+  const [value, setValue] = useState(0);
+
+  useEffect(()=>{
+    setValue(0)
+  }, [value])
 
   const {isCalling, setIsCalling } = useContext(Context);
   const navigation = useNavigation();
-  const handleChange = () => {
-    setValue(newValue);
+ 
+
+  const openHome = () => {
+    try {
+      navigation.navigate('Home'); 
+    } catch (error) {
+      console.error('An error occurred during the end call:', error.message);
+    }
   };
-
-
   const handleStartCall = () => {
     try {
       navigation.navigate('CallScreen'); 
       setIsCalling(true)
+      setValue(1)
     } catch (error) {
       console.error('An error occurred during the end call:', error.message);
     }
@@ -43,6 +50,7 @@ const Navigation = () => {
       <HStack style={styles.header}  alignItems="center" shadow={6}>
         <Pressable
           style={selected === 0 ? [styles.tab, styles.activeTab] : styles.tab}
+          onPress={openHome}
         >
           <Center>
             <Icon as={<Ionicon name={selected === 0 ? 'home' : 'home-outline'} />} style={styles.icon} />
@@ -52,11 +60,11 @@ const Navigation = () => {
           </Center>
         </Pressable >
         <Pressable
-          style={selected === 1 ? [styles.tab, styles.activeTab] : styles.tab}
+          style={value === 1 ? [styles.tab, styles.activeTab] : styles.tab}
           onPress={handleStartCall}
         >
           <Center>
-            <Icon as={<Ionicon name={selected === 1 ? 'call' : 'call-outline'} />} style={styles.icon} />
+            <Icon as={<Ionicon name={value === 1 ? 'call' : 'call-outline'} />} style={styles.icon} />
             <Text style={styles.label} fontSize="12">
               Call Bes
             </Text>

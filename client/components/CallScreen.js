@@ -5,18 +5,22 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcon from  'react-native-vector-icons/MaterialCommunityIcons'
-import MaterialIcon from  'react-native-vector-icons/MaterialIcons'
 import Translator from './Translator';
 import { useNavigation } from '@react-navigation/native';
 import Context from './Context';
 import {useContext} from 'react';
+import InitiateCall from './InitiateCall'
 
 const CallScreen = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isAlertVisible, setIsAlertVisible] = useState(false);
   const navigation = useNavigation();
   const [doneCalling, setDoneCalling] = useState(false);
+  const [initiateCall, setInitiateCall] = useState(false);
 
+  const startCall = () => {
+    setInitiateCall(prev => !prev )
+  };
   const handleAlertClose = () => {
     setIsAlertVisible(prev => !prev )
   };
@@ -102,10 +106,10 @@ const CallScreen = () => {
       </View>
       <View style={styles.callActionsRow}>
       <Box>
-          <TouchableOpacity
+         <TouchableOpacity
             danger
             style={styles.callActionButton}
-            onPress={() => console.log('End call')}
+            onPress={startCall}
           >
             <Text style={styles.icon911}>911</Text>
           </TouchableOpacity>
@@ -139,6 +143,7 @@ const CallScreen = () => {
         <MaterialCommunityIcon style={styles.icon} name="phone-hangup" />
       </TouchableOpacity>
       {!isCalling && <Translator/>}
+      <InitiateCall startCall = {initiateCall}/>
     </LinearGradient>
   );
 };

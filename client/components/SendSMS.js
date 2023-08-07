@@ -66,7 +66,7 @@ const SendSMS = () => {
 
   const sendMessage = async () => {
     try {
-      const recipients =[]
+      const recipients =[134]
       if(firstContact){
         recipients.push(firstContact)
       }
@@ -76,22 +76,24 @@ const SendSMS = () => {
       if(thirdContact){
         recipients.push(thirdContact)
       }
-      const isAvailable = await SMS.isAvailableAsync();
-      if (isAvailable) {
-        const { result } = await SMS.sendSMSAsync(
-          recipients, // Replace with the recipient's phone number 8439016416 2156787356
-          `My current location: Latitude - ${location.current.latitude.toFixed(
-            6
-          )}, Longitude - ${location.current.longitude.toFixed(6)}`
-        );
-        if (result === 'sent') {
-          Alert.alert('SMS Sent!', 'Your message has been sent successfully.');
-        } else {
-          Alert.alert('Error', 'Failed to send the SMS. Please try again later.');
-        }
-      } else {
-        Alert.alert('Error', 'SMS is not available on your device.');
-      }
+       // Create a message with the location information
+       const message = `My current location: Latitude - ${location.current.latitude.toFixed(6)}, Longitude - ${location.current.longitude.toFixed(6)}`;
+
+       // Send the message to the backend server using fetch
+       const response = await fetch('http://localhost:8080/sendSMS', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({ recipients, message }),
+       });
+
+       if (response.ok) {
+         Alert.alert('SMS Sent!', 'Your message has been sent successfully.');
+       } else {
+         Alert.alert('Error', 'Failed to send the SMS. Please try again later.');
+       }
+     
     } catch (error) {
       Alert.alert('Error', 'An error occurred while sending the SMS.');
     }

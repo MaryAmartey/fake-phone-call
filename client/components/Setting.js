@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { HStack, VStack, Box, Text, FormControl, Input, Divider, CheckIcon } from 'native-base';
+import { HStack, VStack, Box, Text, FormControl, Input, Divider, CheckIcon, Icon } from 'native-base';
 import { Select } from "native-base";
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import { StyleSheet } from 'react-native';
@@ -72,7 +72,7 @@ return (
       </Text>
      </HStack>
       <Divider />
-    <Box>
+    {/* <Box>  
     <Text bold fontSize="xl" mb="2">
         Talk to Bes
       </Text>
@@ -90,14 +90,14 @@ return (
         </Select>
       </FormControl>
       <Divider />
-    </Box>
+    </Box>*/}
     <Box>
       <Text bold fontSize="xl" mb="1">
         Keywords
       </Text>
       <FormControl mb="3">
         <FormControl.Label>Call keyword</FormControl.Label>
-        <Input variant="rounded"
+        <Input size="xl" variant="rounded"
           value={callKeyword}
           onChangeText={(value) => setCallKeyword(value)}
           onBlur={saveKeywords} />
@@ -107,7 +107,7 @@ return (
       </FormControl>
       <FormControl mb="3">
         <FormControl.Label>Share location keyword</FormControl.Label>
-        <Input  variant="rounded"
+        <Input size="xl"variant="rounded"
           value={sendMessageKeyword}
           onChangeText={(value) => setSendMessageKeyword(value)}
           onBlur={saveKeywords} />
@@ -126,19 +126,19 @@ return (
         <FormControl.Label>
          Add your emergency contacts
         </FormControl.Label>
-        <Input placeholder="Jess" variant="rounded"
+        <Input InputLeftElement = {<Icon as = {<Ionicon  name ="person" size={20}/>} ml ="4" /> } size="xl" placeholder="+1284728828" variant="rounded"
           value={firstContact}
           onChangeText={(value) => setFirstContact(value)}
           onBlur={saveKeywords}/>
       </FormControl>
       <FormControl  mb="2">
-        <Input placeholder="Mahek" variant="rounded"
+        <Input InputLeftElement = {<Icon as = {<Ionicon  name ="person" size={20}/>} ml ="4" /> }  size="xl" placeholder="+1284728828" variant="rounded"
           value={secondContact}
           onChangeText={(value) => setSecondContact(value)}
           onBlur={saveKeywords}/>
       </FormControl>
       <FormControl  mb="5">
-        <Input placeholder="Jun" variant="rounded"
+        <Input InputLeftElement = {<Icon as = {<Ionicon  name ="person" size={20}/>} ml ="4" /> }  size="xl"placeholder="+1284728828" variant="rounded"
           value={thirdContact}
           onChangeText={(value) => setThirdContact(value)}
           onBlur={saveKeywords} />
@@ -154,7 +154,7 @@ return (
    right={0}
    p={4}
  >
-  <Navigation/>
+   <Navigation selected ={2}/>
 </Box>
 </>
   );

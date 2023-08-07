@@ -1,11 +1,10 @@
-import React, {useCallback} from 'react';
-import {Alert, Button, Linking, StyleSheet, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Alert, Button, Linking, StyleSheet, View} from 'react-native';;
 
-const phoneNumber = '6147041199';
+const InitiateCall = ({ startCall }) => {
+  const url = 'tel:6147041199';
 
-const OpenURLButton = ({url, children}) => {
-  const handlePress = useCallback(async () => {
-    
+  const intiatePhoneCall = useCallback(async () => {
     if (url.startsWith('tel:')) {
       // If the URL starts with 'tel:', it's a phone number
       await Linking.openURL(url);
@@ -19,16 +18,13 @@ const OpenURLButton = ({url, children}) => {
     }
   }, [url]);
 
+  // useEffect to automatically initiate the call when startCall prop is true
+  useEffect(() => {
+    if (startCall) {
+      intiatePhoneCall();
+    }
+  }, [startCall, intiatePhoneCall]);
 
-  return <Button title={children} onPress={handlePress} />;
-};
-
-const InitiateCall = () => {
-  return (
-    <View style={styles.container}>
-      <OpenURLButton url={`tel:${phoneNumber}`}>Call</OpenURLButton>
-    </View>
-  );
 };
 
 const styles = StyleSheet.create({
