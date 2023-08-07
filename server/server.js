@@ -60,7 +60,7 @@ wss.on('connection', (ws) => {
   // Handle WebSocket disconnections
   ws.on('close', () => {
     console.log('WebSocket disconnected');
-  })r
+  })
 });
 
 module.exports = { text };
