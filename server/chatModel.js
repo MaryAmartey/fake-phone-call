@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const chatModel = async (userInput) => {
   process.env.LANGCHAIN_HANDLER = "langchain";
-  const model = new ChatOpenAI({ temperature: 0 });
+  const model = new ChatOpenAI({ temperature: 0.9 });
   const tools = [
     new SerpAPI(process.env.SERPAPI_API_KEY, {
       location: "Austin,Texas,United States",
