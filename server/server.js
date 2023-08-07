@@ -19,7 +19,6 @@ app.get('/', (req, res) => {
 
 // API route to handle sending SMS with location
 app.post('/sendSMS', async (req, res) => {
-  console.log("h")
   const { recipients, message } = req.body;
 
   try {
@@ -52,8 +51,8 @@ wss.on('connection', (ws) => {
   ws.on('message', async (message) => {
     text = message.toString('utf-8');
     console.log('Received message:', text);
-    response = "Info sent from chat Model"
-    //response = await executorFunction(text)
+    //response = "Info sent from chat Model"
+    response = await executorFunction(text)
     // Send a response back to the WebSocket client
     console.log("response:", response)
     ws.send(response)
@@ -61,7 +60,7 @@ wss.on('connection', (ws) => {
   // Handle WebSocket disconnections
   ws.on('close', () => {
     console.log('WebSocket disconnected');
-  })
+  })r
 });
 
 module.exports = { text };

@@ -97,6 +97,7 @@ const SendSMS = ({sendMsg}) => {
        if (response.ok) {
          Alert.alert('SMS Sent!', 'Your message has been sent successfully.');
        } else {
+        
          Alert.alert('Error', 'Failed to send the SMS. Please try again later.');
        }
      

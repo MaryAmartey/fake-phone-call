@@ -59,8 +59,8 @@ const Translator = () => {
         // If speechResults contains the keyword (case-insensitive), set startCallByKey to true
         setstartCallByKey(true);
         // Additional logic or actions can be performed here
-
-        // Stop running the rest of the code
+        stopListening()
+        //Stop running the rest of the code
         return;
       }
       // TODO: If speechResults contains keywords, connect to emergency services, else execute logic below
@@ -109,7 +109,7 @@ const stopVoice = async () => {
 }
   const startListening = () => {
     console.log("started listening");
-    websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
+    websocketRef.current = new WebSocket('wss://fake-phone-call.onrender.com');
       websocketRef.current.onopen = () => {
         console.log('WebSocket connected');
       };
