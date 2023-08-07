@@ -9,13 +9,14 @@ import Context from './Context';
 import {useContext} from 'react';
 const Navigation = ({selected}) => {
   const [value, setValue] = useState(0);
-
-  useEffect(()=>{
-    setValue(0)
-  }, [value])
-
   const {isCalling, setIsCalling } = useContext(Context);
   const navigation = useNavigation();
+
+  useEffect(()=>{
+    setTimeout(() => {
+      setValue(0);
+    }, 1000); 
+  }, [value])
  
 
   const openHome = () => {
@@ -49,11 +50,11 @@ const Navigation = ({selected}) => {
     <Box>
       <HStack style={styles.header}  alignItems="center" shadow={6}>
         <Pressable
-          style={selected === 0 ? [styles.tab, styles.activeTab] : styles.tab}
+          style={(selected === 0 && value==0) ? [styles.tab, styles.activeTab] : styles.tab}
           onPress={openHome}
         >
           <Center>
-            <Icon as={<Ionicon name={selected === 0 ? 'home' : 'home-outline'} />} style={styles.icon} />
+            <Icon as={<Ionicon name={(selected === 0 && value==0)  ? 'home' : 'home-outline'} />} style={styles.icon} />
             <Text style={styles.label} fontSize="12">
               Home
             </Text>
@@ -72,11 +73,11 @@ const Navigation = ({selected}) => {
         </Pressable >
            
         <Pressable
-          style={selected === 2 ? [styles.tab, styles.activeTab] : styles.tab}
+          style={(selected === 2 && value==0)  ? [styles.tab, styles.activeTab] : styles.tab}
           onPress={openSetting}
         >
           <Center>
-            <Icon as={<Ionicon name={selected === 2 ? 'settings-sharp' : 'settings-outline'} />} style={styles.icon} />
+            <Icon as={<Ionicon name={(selected === 2 && value==0)  ? 'settings-sharp' : 'settings-outline'} />} style={styles.icon} />
             <Text style={styles.label} fontSize="12">
               Settings
             </Text>

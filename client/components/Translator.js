@@ -5,6 +5,8 @@ import Tts from 'react-native-tts';
 import ResponsePhrasesData from './ReponsePhrasesData'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Context from './Context';
+import InitiateCall from './InitiateCall';
+import { useNavigation } from '@react-navigation/native';
 
 const Translator = () => {
   const [isListening, setIsListening] = useState(false);
@@ -19,8 +21,8 @@ const Translator = () => {
   const [callKeyword, setCallKeyword] = useState("");
   const [sendMessageKeyword, setSendMessageKeyword] = useState("");
   const {isCalling}  = useContext(Context);
-
-
+  const [startCallByKey, setstartCallByKey ] = useState(false)
+  const navigation = useNavigation();
   useEffect(() => {
     console.log("isCalling", isCalling)
     if(isCalling){
@@ -52,6 +54,15 @@ const Translator = () => {
 
   useEffect(() => {
     if (isListening && speechResults) {
+      const keywordRegex = new RegExp(callKeyword, 'i');
+      if (keywordRegex.test(speechResults)) {
+        // If speechResults contains the keyword (case-insensitive), set startCallByKey to true
+        setstartCallByKey(true);
+        // Additional logic or actions can be performed here
+
+        // Stop running the rest of the code
+        return;
+      }
       // TODO: If speechResults contains keywords, connect to emergency services, else execute logic below
       if (!isPhrase) {
         clearTimeout(silenceTimer)
@@ -60,7 +71,6 @@ const Translator = () => {
           if (isListening) {
             setIsPhrase(true);
             isProcessingRef.current = true
-            console.log("what");
             console.log("1",isProcessingRef.current)
             setSpokenPhrase(speechResults);
           }
@@ -176,6 +186,12 @@ const stopVoice = async () => {
     }
   };
 
+  return (
+    <View>
+      {startCallByKey && <InitiateCall startCall={true} />}
+    </View>
+  );
+ 
 };
 
 export default Translator;

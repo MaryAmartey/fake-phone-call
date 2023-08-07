@@ -4,11 +4,17 @@ import { View, Button, Alert, Text, Platform, PermissionsAndroid } from 'react-n
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SendSMS = () => {
+const SendSMS = ({sendMsg}) => {
   const location = useRef(null);
   const [firstContact, setFirstContact] = useState("");
   const [secondContact, setSecondContact] = useState("");
   const [thirdContact, setThirdContact] = useState("");
+
+  useEffect(() => {
+    if (sendMsg) {
+      getLocation();
+    }
+  }, [sendMsg]);
 
   useEffect(() => {
     // Load saved keywords from AsyncStorage when the component mounts
@@ -99,12 +105,7 @@ const SendSMS = () => {
     }
   };
 
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Send SMS" onPress={getLocation} />
-      <Text>{firstContact}</Text>
-    </View>
-  );
+  
 };
 
 export default SendSMS;

@@ -10,6 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import Context from './Context';
 import {useContext} from 'react';
 import InitiateCall from './InitiateCall'
+import SendSMS from './SendSMS';
 
 const CallScreen = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,19 +18,22 @@ const CallScreen = () => {
   const navigation = useNavigation();
   const [doneCalling, setDoneCalling] = useState(false);
   const [initiateCall, setInitiateCall] = useState(false);
+  const [sendMessage, setSendMessage] = useState(false);
 
   const startCall = () => {
     setInitiateCall(prev => !prev )
   };
-  const handleAlertClose = () => {
-    setIsAlertVisible(prev => !prev )
+  const sendMsg = () => {
+    setSendMessage(prev => !prev )
+  };
+  const handleAlert  = () => {
+    setIsOpen(prev => !prev )
   };
 
   const {isCalling, setIsCalling } = useContext(Context);
 
   const handleEndCall = () => {
     try {
-      console.log("in handleend call")
       setIsCalling(false)
       setTimeout(() => {
         navigation.navigate('Home');// Make sure you are using the correct setIsCalling from the context
@@ -79,7 +83,7 @@ const CallScreen = () => {
               <HStack style={styles.alertHeader}>
               <MaterialCommunityIcon style={styles.iconAlert} name="shield-star" />
                 <Text style={styles.alertText}>
-                  We notified the police and your location has been shared.
+                  Your location has been shared with your emergency contact.
                 </Text>
               </HStack>
             </HStack>
@@ -119,7 +123,8 @@ const CallScreen = () => {
           <TouchableOpacity
             danger
             style={styles.callActionButton}
-            onPress={() => console.log('End call')}
+            onPress={sendMsg}
+            
           >
             <MaterialCommunityIcon style={styles.icon} name="account-alert" />
           </TouchableOpacity>
@@ -128,8 +133,7 @@ const CallScreen = () => {
         <Box>
           <TouchableOpacity
             danger
-            style={styles.callActionButton}
-            onPress={handleAlertClose}>
+            style={styles.callActionButton} onPress={handleAlert}>
             <MaterialCommunityIcon style={styles.icon} name="shield-star" />
           </TouchableOpacity>
           <Text style={styles.iconText}>alert{'\n'}officials</Text>
@@ -144,6 +148,7 @@ const CallScreen = () => {
       </TouchableOpacity>
       {!isCalling && <Translator/>}
       <InitiateCall startCall = {initiateCall}/>
+      <SendSMS sendMsg = {sendMessage}/>
     </LinearGradient>
   );
 };
