@@ -99,11 +99,9 @@ const Translator = () => {
 
 const stopVoice = async () => {
   if(isProcessingRef.current ==false){
-    console.log("lucy")
     setDoneProcessing(true)
   }
   else{
-    console.log("mary")
     await Voice.stop();
   }
 }

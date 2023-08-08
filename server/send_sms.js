@@ -8,13 +8,13 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 // Create a Twilio client
 const client = twilio(accountSid, authToken);
-
+//2679024711
 // Function to send a message to a single recipient
 const sendMessage = async (recipientNumber, message) => {
   try {
     const result = await client.messages.create({
       body: message,
-      from: '+18056670929', // Replace with your Twilio phone number
+      from: '+16672880610', // Replace with your Twilio phone number
       to: recipientNumber,
     });
 

@@ -55,7 +55,8 @@ wss.on('connection', (ws) => {
     response = await executorFunction(text)
     // Send a response back to the WebSocket client
     console.log("response:", response)
-    ws.send(response)
+    const question = "What about you Mary? What is your favorite comfort food?"
+    ws.send(question)
   })
   // Handle WebSocket disconnections
   ws.on('close', () => {

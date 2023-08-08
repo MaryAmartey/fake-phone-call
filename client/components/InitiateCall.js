@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, Button, Linking, StyleSheet, View} from 'react-native';;
 
 const InitiateCall = ({ startCall }) => {
-  const url = 'tel:6147041199';
+  const url = 'tel:2679024711';
 
   const intiatePhoneCall = useCallback(async () => {
     if (url.startsWith('tel:')) {
