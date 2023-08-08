@@ -83,7 +83,7 @@ const SendSMS = ({sendMsg}) => {
         recipients.push(thirdContact)
       }
        // Create a message with the location information
-       const message = `My current location: http://maps.google.com/?q=${location.current.latitude.toFixed(6)},${location.current.longitude.toFixed(6)}`;
+       const message = `Mary sent you her current location: http://maps.google.com/?q=${location.current.latitude.toFixed(6)},${location.current.longitude.toFixed(6)}`;
 
        // Send the message to the backend server using fetch
        const response = await fetch('https://fake-phone-call.onrender.com/sendSMS', {
