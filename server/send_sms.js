@@ -14,7 +14,7 @@ const sendMessage = async (recipientNumber, message) => {
   try {
     const result = await client.messages.create({
       body: message,
-      from: '+16672880610', // Replace with your Twilio phone number
+      from: '+18056670929', // Replace with your Twilio phone number
       to: recipientNumber,
     });
 
