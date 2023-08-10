@@ -12,10 +12,6 @@ const HOST = '0.0.0.0';
 // App
 const app = express();
 app.use(express.json());
-//app.use('/', routes)
-app.get('/', (req, res) => {
-    res.send('Hello World');
-  });
 
 // API route to handle sending SMS with location
 app.post('/sendSMS', async (req, res) => {
@@ -55,8 +51,8 @@ wss.on('connection', (ws) => {
     response = await executorFunction(text)
     // Send a response back to the WebSocket client
     console.log("response:", response)
-    const question = "What about you Mary? What is your favorite comfort food?"
-    ws.send(question)
+    //const question = "What about you Mary? What is your favorite comfort food?"
+    ws.send(response)
   })
   // Handle WebSocket disconnections
   ws.on('close', () => {
