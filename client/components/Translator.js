@@ -109,7 +109,7 @@ const stopVoice = async () => {
     console.log("started listening");
     //wss://fake-phone-call.onrender.com
     //ws://0.0.0.0:8080
-    websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
+    websocketRef.current = new WebSocket('wss://fake-phone-call.onrender.com');
       websocketRef.current.onopen = () => {
         console.log('WebSocket connected');
       };
