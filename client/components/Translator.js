@@ -14,7 +14,6 @@ const Translator = () => {
   const [speechResults, setSpeechResults] = useState();
   const [spokenPhrase, setSpokenPhrase] = useState();
   const [silenceTimer, setSilenceTimer] = useState();
-  //const [isProcessing, setIsProcessing] = useState(false);
   const [doneProcessing, setDoneProcessing] = useState(false);
   const isProcessingRef = useRef(false)
   const websocketRef = useRef(null);
@@ -23,6 +22,7 @@ const Translator = () => {
   const {isCalling}  = useContext(Context);
   const [startCallByKey, setstartCallByKey ] = useState(false)
   const navigation = useNavigation();
+
   useEffect(() => {
     console.log("isCalling", isCalling)
     if(isCalling){
@@ -42,6 +42,8 @@ const Translator = () => {
   
     Tts.setDefaultRate(0.45); // Set speech rate (0.5 is normal; adjust as needed)
     Tts.setDefaultPitch(1.0);
+
+    loadKeywords();
     return () => {
       clearTimeout(silenceTimer);
       Voice.destroy().then(Voice.removeAllListeners);
@@ -56,11 +58,10 @@ const Translator = () => {
     if (isListening && speechResults) {
       const keywordRegex = new RegExp(callKeyword, 'i');
       if (keywordRegex.test(speechResults)) {
-        // If speechResults contains the keyword (case-insensitive), set startCallByKey to true
         setstartCallByKey(true);
-        // Additional logic or actions can be performed here
+        // Stop running the rest of the code and go back to home screen 
         stopListening()
-        // Stop running the rest of the code
+        navigation.navigate('Home');
         return;
       }
       // TODO: If speechResults contains keywords, connect to emergency services, else execute logic below
@@ -71,7 +72,6 @@ const Translator = () => {
           if (isListening) {
             setIsPhrase(true);
             isProcessingRef.current = true
-            console.log("1",isProcessingRef.current)
             setSpokenPhrase(speechResults);
           }
         }, 1500));
@@ -81,11 +81,9 @@ const Translator = () => {
 
   useEffect(() => {
     console.log(spokenPhrase)
-    console.log("2",isProcessingRef.current)
     if (isListening && spokenPhrase && isProcessingRef.current) {
       websocketRef.current.send(spokenPhrase)
       const phrase = getRandomPhrase()
-      console.log("1")
       speakText(phrase);
       isProcessingRef.current =false
     }
@@ -96,6 +94,8 @@ const Translator = () => {
       isProcessingRef.current =true
     }
   }, [doneProcessing])
+
+
 
 const stopVoice = async () => {
   if(isProcessingRef.current ==false){
@@ -108,7 +108,8 @@ const stopVoice = async () => {
   const startListening = () => {
     console.log("started listening");
     //wss://fake-phone-call.onrender.com
-    websocketRef.current = new WebSocket('wss://fake-phone-call.onrender.com');
+    //ws://0.0.0.0:8080
+    websocketRef.current = new WebSocket('ws://0.0.0.0:8080');
       websocketRef.current.onopen = () => {
         console.log('WebSocket connected');
       };
@@ -163,10 +164,6 @@ const stopVoice = async () => {
     return responsePhrases[randomIndex];
   };
 
-  useEffect(() => {
-    // Load saved keywords from AsyncStorage when the component mounts
-    loadKeywords();
-  }, []);
 
   const loadKeywords = async () => {
     try {

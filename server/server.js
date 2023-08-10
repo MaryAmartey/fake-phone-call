@@ -1,9 +1,7 @@
 'use strict';
 const express = require('express');
-const bodyParser = require('body-parser'); 
 const WebSocket = require('ws');
 const executorFunction = require('./chatModel.js');
-const routes = require('./routes.js')
 const { sendMessagesToRecipients } = require('./send_sms.js');
 // Constants
 const PORT = 8080;
@@ -60,7 +58,6 @@ wss.on('connection', (ws) => {
   })
 });
 
-module.exports = { text };
 
 
 

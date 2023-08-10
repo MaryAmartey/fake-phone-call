@@ -100,7 +100,6 @@ const CallScreen = () => {
             <TouchableOpacity
               danger
               style={styles.callActionButton}
-              onPress={() => console.log('End call')}
             >
               <Ionicon style={styles.icon} name={button.iconName} />
             </TouchableOpacity>

@@ -72,25 +72,7 @@ return (
       </Text>
      </HStack>
       <Divider />
-    {/* <Box>  
-    <Text bold fontSize="xl" mb="2">
-        Talk to Bes
-      </Text>
-      <FormControl mb="3">
-        <FormControl.Label>Talk to Bes in:</FormControl.Label>
-        <Select minWidth="200" accessibilityLabel="Talk to Bes" placeholder="5 minutes" variant="rounded" _selectedItem={{
-          bg: "teal.600",
-          endIcon: <CheckIcon size={5} />
-        }} mt="1">
-          <Select.Item label="5 minutes" value="5" />
-          <Select.Item label="10 minutes" value="10" />
-          <Select.Item label="15 minutes" value="15" />
-          <Select.Item label="30 minutes" value="30" />
-          <Select.Item label="1 hour" value="1hr" />
-        </Select>
-      </FormControl>
-      <Divider />
-    </Box>*/}
+   
     <Box>
       <Text bold fontSize="xl" mb="1">
         Keywords
