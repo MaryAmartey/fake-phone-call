@@ -23,8 +23,6 @@ const chatModel = async (userInput) => {
   const executor = await initializeAgentExecutorWithOptions(tools, model, {
     agentType: "chat-conversational-react-description",
     verbose: true,
-    max_iterations: 2,
-    early_stopping_method:"generate"
   });
   console.log("Loaded agent.");
 
